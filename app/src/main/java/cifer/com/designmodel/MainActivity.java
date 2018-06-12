@@ -4,7 +4,14 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+
 import cifer.com.designmodel.BuilderModel.Person;
+import cifer.com.designmodel.Proxy代理模式.InterObject;
+import cifer.com.designmodel.Proxy代理模式.ProxyObject;
+import cifer.com.designmodel.Proxy代理模式.RealObject;
 import cifer.com.designmodel.策略模式.PriceCaculator;
 import cifer.com.designmodel.策略模式.PriceCaculator2;
 import cifer.com.designmodel.策略模式.SubwayCalculate;
@@ -58,6 +65,24 @@ public class MainActivity  extends AppCompatActivity{
         priceCalculate2.setStrategy(new SubwayCalculate());
         int price1 = priceCalculate2.getPrice(10);
         System.out.println(price1);
+
+        //Proxy（代理）模式
+        final RealObject object = new RealObject();
+        //静态代理
+        ProxyObject proxyObject = new ProxyObject(object);
+        proxyObject.doEexc();
+        //动态代理
+        InterObject proxy = (InterObject) Proxy.newProxyInstance(object.getClass().getClassLoader()
+                , object.getClass().getInterfaces(), new InvocationHandler() {
+                    @Override
+                    public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+                        System.out.println("-----动态代理 start----");
+                        Object returnValue = method.invoke(object, args);
+                        System.out.println("-----动态代理 end----");
+                        return returnValue;
+                    }
+                });
+        proxy.doEexc();
 
     }
 }
